@@ -32,3 +32,7 @@ class DataHandler:
 
     def get_browser_name(self):
         return self.doc.visitor_useragent.apply(lambda x: x.split("/")[0])
+
+    def get_top_reader(self):
+        top_readers = self.doc.groupby(['visitor_uuid'])['event_readtime'].sum()
+        return top_readers.nlargest(10)
