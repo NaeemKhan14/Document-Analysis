@@ -80,3 +80,47 @@ class DataHandler:
         top_readers = self.doc.groupby(['visitor_uuid'])['event_readtime'].sum()
         return top_readers.nlargest(10)
 
+    #################################
+    # Also-likes functions (Task 5) #
+    #################################
+    # Task 5a
+    def get_visitors_uuid(self, doc_uuid):
+        """
+        Gets list of all visitors' uuid which have read the given document.
+        :param doc_uuid: Uuid of the document to get visitors' list from.
+        :return: Visitors' uuid column of the .json file for the given doc_uuid.
+        """
+        return self.doc.loc[self.doc['subject_doc_id'] == doc_uuid, 'visitor_uuid']
+
+    # Task 5b
+    def get_documents_uuid(self, visitor_uuid):
+        """
+        Gets the list of documents read by the given visitor.
+        :param visitor_uuid: Uuid of the visitor.
+        :return: Documents' Uuid read by the given visitor.
+        """
+        return self.doc.loc[self.doc['visitor_uuid'] == visitor_uuid, 'subject_doc_id']
+
+    # Task 5c.1
+    def sort_documents_liked(self, doc_uuid):
+        """
+        Sorting function to get similar books related to the given document.
+        :param doc_uuid: Document ID to find similar books for.
+        :return: List of books read by users who have read the same book.
+        """
+        # Gets a boolean mask of the entire document where True will only be the values
+        # where doc_uuid is present.
+        docs_mask = self.doc['subject_doc_id'].eq(doc_uuid)
+        # self.doc.loc[docs_mask, 'visitor_uuid'] = Gets the visitors' ID who have read the document
+        # with our given doc_uuid.
+        return self.doc.loc[self.doc['visitor_uuid'].isin(self.doc.loc[docs_mask, 'visitor_uuid']), ['visitor_uuid','subject_doc_id']]
+
+    # Task 5c.2
+    def get_user_also_likes(self, doc_uuid, visitor_uuid='', sort=sort_documents_liked):
+        return sort(self, doc_uuid)
+
+    # Task 5d
+    def get_top_ten_likes(self, doc_uuid, sort=sort_documents_liked):
+        return sort(self, doc_uuid).value_counts().nlargest(10)
+
+
