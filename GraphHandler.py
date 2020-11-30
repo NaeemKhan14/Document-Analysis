@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from DataHandler import DataHandler
+from graphviz.dot import Digraph
 
 
 class GraphHandler:
@@ -52,4 +53,35 @@ class GraphHandler:
         browser_names = self.data.get_browser_name()
         browser_names.value_counts().plot(kind='bar', title='Browser Names')
         return plt.show()
+
+    def show_likes_graph(self, doc_uuid, visitor_uuid=''):
+        """
+        Makes the graph from the results taken from DataHandler.get_top_ten_likes()
+        function.
+        :param doc_uuid: Document ID taken from the .json file.
+        :param visitor_uuid: (Optional) Visitor Document ID taken from the .json file.
+        """
+        graph = Digraph("likes_graph")
+        graph_data = self.data.get_top_ten_likes(doc_uuid).iteritems()
+        # Go through each element in the list.
+        for g_data in graph_data:
+            # Takes the last 4 digits of visitor and doc ID.
+            visitor_id = g_data[0][0][-4:]
+            doc_id = g_data[0][1][-4:]
+            # If the visitor or doc ID of this iteration value matches
+            # the ones taken from function parameter, we set a color
+            # scheme for them. Otherwise they are directly added to the
+            # graph.
+            if visitor_uuid and visitor_id == visitor_uuid[-4:]:
+                graph.node(visitor_id, color='green', style='filled', shape='box')
+            else:
+                graph.node(visitor_id, shape='box')
+
+            if doc_id == doc_uuid[-4:]:
+                graph.node(doc_id, color='green', style='filled', shape='circle')
+            else:
+                graph.node(doc_id, shape='circle')
+            graph.edge(visitor_id, doc_id)
+
+        graph.render("likes_graph.gv", view=True)
 

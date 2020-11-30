@@ -1,14 +1,19 @@
 from DataHandler import DataHandler
 from GraphHandler import GraphHandler
 
-data = DataHandler("issuu_cw2.json")
-print(data.get_user_also_likes("100713205147-2ee05a98f1794324952eea5ca678c026"))
+
+graph = GraphHandler("sample_3m_lines.json")
+#start_time = time.time()
+d = graph.show_likes_graph("140213232558-bdd53a3a2ae91f2c5f951187668edd50")
+#print("--- %s seconds ---" % (time.time() - start_time))
+
+
 # top_readers = data.get_top_reader()
 # print(top_readers)
 #
-# graph = GraphHandler("issuu_cw2.json")
+#graph = GraphHandler("issuu_cw2.json")
 #
-# graph.get_country_graph("131224090853-45a33eba6ddf71f348aef7557a86ca5f")
+#graph.get_country_graph("140213232558-bdd53a3a2ae91f2c5f951187668edd50")
 # graph.get_continent_graph()
 # graph.get_browser_data_graph()
 # graph.get_browser_names_graph()

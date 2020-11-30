@@ -1,5 +1,6 @@
 import pandas as pd
 import pycountry_convert as pc
+import time
 
 
 class DataHandler:
@@ -17,7 +18,9 @@ class DataHandler:
         :param file_name: Name of the .json file.
         """
         self.country_codes = None
-        self.doc = pd.read_json(file_name, lines=True)
+        document = pd.read_json(file_name, lines=True, chunksize=5)
+        self.doc = document[['visitor_uuid', 'visitor_useragent', 'visitor_country', 'subject_doc_id']]
+
         # Pandas dataset properties
         pd.set_option("max_columns", None)      # Displays all the columns in result
         pd.set_option("max_colwidth", None)     # Stretches the results to full column width
@@ -112,15 +115,30 @@ class DataHandler:
         # where doc_uuid is present.
         docs_mask = self.doc['subject_doc_id'].eq(doc_uuid)
         # self.doc.loc[docs_mask, 'visitor_uuid'] = Gets the visitors' ID who have read the document
-        # with our given doc_uuid.
-        return self.doc.loc[self.doc['visitor_uuid'].isin(self.doc.loc[docs_mask, 'visitor_uuid']), ['visitor_uuid','subject_doc_id']]
+        # with our given doc_uuid. Then we give that result as a condition to find the values from
+        # 'visitor_uuid' using the isin() function.
+        return self.doc.loc[self.doc['visitor_uuid'].isin(self.doc.loc[docs_mask, 'visitor_uuid']), ['visitor_uuid', 'subject_doc_id']]
 
     # Task 5c.2
     def get_user_also_likes(self, doc_uuid, visitor_uuid='', sort=sort_documents_liked):
+        """
+        Gets the documents read by other users using sort function.
+        :param doc_uuid: Document ID to find similar books for.
+        :param visitor_uuid: (Optional) Visitors' UUID.
+        :param sort: Sort function to get our results.
+        :return: Series of results containing 'visitor_uuid' and 'subject_doc_id' columns.
+        """
         return sort(self, doc_uuid)
 
     # Task 5d
-    def get_top_ten_likes(self, doc_uuid, sort=sort_documents_liked):
+    def get_top_ten_likes(self, doc_uuid, visitor_uuid='', sort=sort_documents_liked):
+        """
+        Gets the top 10 entries from the results of similar read documents.
+        :param doc_uuid: Document ID to find similar books for.
+        :param visitor_uuid: (Optional) Visitors' UUID.
+        :param sort: Sort function to get our results.
+        :return: Series containing 'visitor_uuid', 'subject_doc_id' and
+                 count of times the document was read.
+        """
         return sort(self, doc_uuid).value_counts().nlargest(10)
-
 

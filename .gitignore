@@ -130,3 +130,9 @@ dmypy.json
 output.txt
 
 issuu_cw2 - Copy.json
+
+*.ps
+
+*.gv
+
+*.pdf
