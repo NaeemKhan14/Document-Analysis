@@ -18,8 +18,8 @@ class DataHandler:
         :param file_name: Name of the .json file.
         """
         self.country_codes = None
-        document = pd.read_json(file_name, lines=True, chunksize=5)
-        self.doc = document[['visitor_uuid', 'visitor_useragent', 'visitor_country', 'subject_doc_id']]
+        document = pd.read_json(file_name, lines=True)
+        self.doc = document[['visitor_uuid', 'visitor_useragent', 'visitor_country', 'subject_doc_id', 'event_readtime', 'event_type']]
 
         # Pandas dataset properties
         pd.set_option("max_columns", None)      # Displays all the columns in result
@@ -27,6 +27,9 @@ class DataHandler:
         pd.set_option("max_rows", None)         # Displays the max number of rows
         pd.set_option("max_seq_item", None)     # Shows all results by removing "..." from results
 
+    ##################
+    #  Task 2        #
+    ##################
     def get_country_name(self, doc_uuid):
         """
         Converts the ISO 3166-1 country codes into country names for
@@ -58,6 +61,9 @@ class DataHandler:
 
         return continent_names
 
+    ##################
+    #  Task 3        #
+    ##################
     def get_browser_data(self):
         """
         Gets all of the visitor_useragent column from the document.
@@ -75,17 +81,19 @@ class DataHandler:
         # after splitting it, the browser agent is always going to be at index 0.
         return self.doc.visitor_useragent.apply(lambda x: x.split("/")[0])
 
+    ##################
+    #  Task 4        #
+    ##################
     def get_top_reader(self):
         """
         Gets the top 10 readers from the .json document based on their read time.
         :return: Pandas dataset containing top 10 readers.
         """
-        top_readers = self.doc.groupby(['visitor_uuid'])['event_readtime'].sum()
-        return top_readers.nlargest(10)
+        return self.doc.groupby(['visitor_uuid'])['event_readtime'].sum().nlargest(10)
 
-    #################################
-    # Also-likes functions (Task 5) #
-    #################################
+    ##################
+    #  Task 5        #
+    ##################
     # Task 5a
     def get_visitors_uuid(self, doc_uuid):
         """
@@ -93,7 +101,7 @@ class DataHandler:
         :param doc_uuid: Uuid of the document to get visitors' list from.
         :return: Visitors' uuid column of the .json file for the given doc_uuid.
         """
-        return self.doc.loc[self.doc['subject_doc_id'] == doc_uuid, 'visitor_uuid']
+        return self.doc.loc[(self.doc['subject_doc_id'] == doc_uuid) & (self.doc['event_type'] == 'read'), 'visitor_uuid']
 
     # Task 5b
     def get_documents_uuid(self, visitor_uuid):
@@ -102,25 +110,28 @@ class DataHandler:
         :param visitor_uuid: Uuid of the visitor.
         :return: Documents' Uuid read by the given visitor.
         """
-        return self.doc.loc[self.doc['visitor_uuid'] == visitor_uuid, 'subject_doc_id']
+        return self.doc.loc[(self.doc['visitor_uuid'] == visitor_uuid) & (self.doc['event_type'] == 'read'), 'subject_doc_id']
 
     # Task 5c.1
-    def sort_documents_liked(self, doc_uuid):
+    def sort_documents_liked(self, doc_uuid, visitor_uuid=None):
         """
         Sorting function to get similar books related to the given document.
         :param doc_uuid: Document ID to find similar books for.
+        :param visitor_uuid: Visitor's unique ID.
         :return: List of books read by users who have read the same book.
         """
-        # Gets a boolean mask of the entire document where True will only be the values
-        # where doc_uuid is present.
-        docs_mask = self.doc['subject_doc_id'].eq(doc_uuid)
-        # self.doc.loc[docs_mask, 'visitor_uuid'] = Gets the visitors' ID who have read the document
-        # with our given doc_uuid. Then we give that result as a condition to find the values from
-        # 'visitor_uuid' using the isin() function.
-        return self.doc.loc[self.doc['visitor_uuid'].isin(self.doc.loc[docs_mask, 'visitor_uuid']), ['visitor_uuid', 'subject_doc_id']]
+        visitors_list = self.get_visitors_uuid(doc_uuid)
+        # There are 3 conditions in this statement: first gets all the visitor_uuid which
+        # are in the visitors_list. Second filters results from that to only the entries
+        # where event_type == read. Last we want to make sure that the given visitor is
+        # not in the results, so we filter it out by self.doc['visitor_uuid'] != visitor_uuid.
+        return self.doc.loc[(self.doc['visitor_uuid'].isin(visitors_list))
+                            & (self.doc['event_type'] == 'read')
+                            & (self.doc['visitor_uuid'] != visitor_uuid),
+                            ['visitor_uuid', 'subject_doc_id']]
 
     # Task 5c.2
-    def get_user_also_likes(self, doc_uuid, visitor_uuid='', sort=sort_documents_liked):
+    def get_user_also_likes(self, doc_uuid, visitor_uuid=None, sort=sort_documents_liked):
         """
         Gets the documents read by other users using sort function.
         :param doc_uuid: Document ID to find similar books for.
@@ -128,10 +139,10 @@ class DataHandler:
         :param sort: Sort function to get our results.
         :return: Series of results containing 'visitor_uuid' and 'subject_doc_id' columns.
         """
-        return sort(self, doc_uuid)
+        return sort(self, doc_uuid, visitor_uuid)
 
     # Task 5d
-    def get_top_ten_likes(self, doc_uuid, visitor_uuid='', sort=sort_documents_liked):
+    def get_top_ten_likes(self, doc_uuid, visitor_uuid=None, sort=sort_documents_liked):
         """
         Gets the top 10 entries from the results of similar read documents.
         :param doc_uuid: Document ID to find similar books for.
@@ -140,5 +151,5 @@ class DataHandler:
         :return: Series containing 'visitor_uuid', 'subject_doc_id' and
                  count of times the document was read.
         """
-        return sort(self, doc_uuid).value_counts().nlargest(10)
+        return sort(self, doc_uuid, visitor_uuid).value_counts().nlargest(10)
 

@@ -54,7 +54,7 @@ class GraphHandler:
         browser_names.value_counts().plot(kind='bar', title='Browser Names')
         return plt.show()
 
-    def show_likes_graph(self, doc_uuid, visitor_uuid=''):
+    def show_likes_graph(self, doc_uuid, visitor_uuid=None):
         """
         Makes the graph from the results taken from DataHandler.get_top_ten_likes()
         function.
@@ -62,7 +62,7 @@ class GraphHandler:
         :param visitor_uuid: (Optional) Visitor Document ID taken from the .json file.
         """
         graph = Digraph("likes_graph")
-        graph_data = self.data.get_top_ten_likes(doc_uuid).iteritems()
+        graph_data = self.data.get_top_ten_likes(doc_uuid, visitor_uuid).iteritems()
         # Go through each element in the list.
         for g_data in graph_data:
             # Takes the last 4 digits of visitor and doc ID.
@@ -82,6 +82,9 @@ class GraphHandler:
             else:
                 graph.node(doc_id, shape='circle')
             graph.edge(visitor_id, doc_id)
+        if visitor_uuid:
+            graph.node(visitor_uuid[-4:], color='green', style='filled', shape='box')
+            graph.edge(visitor_uuid[-4:], doc_uuid[-4:])
 
         graph.render("likes_graph.gv", view=True)
 

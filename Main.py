@@ -1,14 +1,15 @@
 from DataHandler import DataHandler
 from GraphHandler import GraphHandler
-
+from GUIHandler import GUIHandler
 
 graph = GraphHandler("sample_3m_lines.json")
-#start_time = time.time()
-d = graph.show_likes_graph("140213232558-bdd53a3a2ae91f2c5f951187668edd50")
-#print("--- %s seconds ---" % (time.time() - start_time))
+g = graph.show_likes_graph("140213232558-bdd53a3a2ae91f2c5f951187668edd50")
 
+# gui = GUIHandler()
+# gui.mainloop()
 
-# top_readers = data.get_top_reader()
+# data = DataHandler('sample_100k_lines.json')
+# top_readers = data.get_top_ten_likes("100806162735-00000000115598650cb8b514246272b5")
 # print(top_readers)
 #
 #graph = GraphHandler("issuu_cw2.json")
