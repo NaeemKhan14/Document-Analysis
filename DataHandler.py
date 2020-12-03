@@ -1,6 +1,5 @@
 import pandas as pd
 import pycountry_convert as pc
-import time
 
 
 class DataHandler:
@@ -19,7 +18,8 @@ class DataHandler:
         """
         self.country_codes = None
         document = pd.read_json(file_name, lines=True)
-        self.doc = document[['visitor_uuid', 'visitor_useragent', 'visitor_country', 'subject_doc_id', 'event_readtime', 'event_type']]
+        self.doc = document[['visitor_uuid', 'visitor_useragent', 'visitor_country', 'subject_doc_id',
+                             'event_readtime', 'event_type']]
 
         # Pandas dataset properties
         pd.set_option("max_columns", None)      # Displays all the columns in result

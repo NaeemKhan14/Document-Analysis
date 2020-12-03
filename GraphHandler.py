@@ -25,6 +25,7 @@ class GraphHandler:
         """
         country = self.data.get_country_name(doc_uuid)
         country.value_counts().plot(kind='bar', title='Countries')
+        plt.savefig('countries_graph.png', bbox_inches='tight')
         return plt.show()
 
     def get_continent_graph(self):
@@ -34,6 +35,7 @@ class GraphHandler:
         """
         continent = self.data.get_continents()
         continent.value_counts().plot(kind='bar', title='Continents')
+        plt.savefig('continents_graph.png', bbox_inches='tight')
         return plt.show()
 
     def get_browser_data_graph(self):
@@ -43,6 +45,7 @@ class GraphHandler:
         """
         browser_metadata = self.data.get_browser_data()
         browser_metadata.value_counts().plot(kind='bar', title='Browser Data')
+        plt.savefig('browser_data_graph.png', bbox_inches='tight')
         return plt.show()
 
     def get_browser_names_graph(self):
@@ -52,6 +55,7 @@ class GraphHandler:
         """
         browser_names = self.data.get_browser_name()
         browser_names.value_counts().plot(kind='bar', title='Browser Names')
+        plt.savefig('browser_names_graph.png', bbox_inches='tight')
         return plt.show()
 
     def show_likes_graph(self, doc_uuid, visitor_uuid=None):
