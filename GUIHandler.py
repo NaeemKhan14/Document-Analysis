@@ -1,12 +1,16 @@
+import os
 import tkinter as tk
 from tkinter import filedialog, ttk
 from tkinter.messagebox import showinfo, showwarning
-import os
 from DataHandler import DataHandler
+from GraphHandler import GraphHandler
 
 
 class GUIHandler(tk.Tk):
-    
+    """
+    This class is responsible for handling of displaying and processing
+    all the GUI elements and their properties.
+    """
     def __init__(self):
         super(GUIHandler, self).__init__()
         self.graph = None
@@ -44,17 +48,13 @@ class GUIHandler(tk.Tk):
         tk.Button(self, text="Task 5", command=self.get_top_ten_readers).grid(row=6, column=1, sticky=tk.W+tk.E)
         tk.Button(self, text="Task 6", command=self.get_top_ten_readers).grid(row=7, column=1, sticky=tk.W+tk.E)
 
-    # Returns True if the given Entry is empty
-    def entry_is_empty(self, entry_box):
-        if len(entry_box.get()) == 0:
-            return True
-        return False
-
-    # Browse dialog to select the file from computer
-    def load_file(self):
-        self.filename_str.set(filedialog.askopenfilename(master=self))
-
+    ##################
+    #  Task 4        #
+    ##################
     def get_top_ten_readers(self):
+        """
+        Creates a TreeView and displays the top 10 readers list in it.
+        """
         if self.file_exist():
             # Get the file name from file textbox
             self.data = DataHandler(self.filename.get().split('/')[-1])
@@ -77,6 +77,26 @@ class GUIHandler(tk.Tk):
                 index += 1
                 tree.insert(parent='', index='end', iid=index-1, text='', values=(index, value[0], int(value[1])))
             tree.pack(side=tk.TOP, fill=tk.X)
+
+    ###########################
+    #    Helper Functions     #
+    ###########################
+    def entry_is_empty(self, entry_box):
+        """
+        Checks if the given Entry box is empty or not.
+        :param entry_box: The tk.Entry to check.
+        :return: Boolean based on tk.Entry value.
+        """
+        if len(entry_box.get()) == 0:
+            return True
+        return False
+
+    def load_file(self):
+        """
+        This function makes sure that the selected file from file selection
+        menu shows up in the filename text field.
+        """
+        self.filename_str.set(filedialog.askopenfilename(master=self))
 
     def file_exist(self):
         """
