@@ -101,6 +101,7 @@ class DataHandler:
         :param doc_uuid: Uuid of the document to get visitors' list from.
         :return: Visitors' uuid column of the .json file for the given doc_uuid.
         """
+
         return self.doc.loc[(self.doc['subject_doc_id'] == doc_uuid) & (self.doc['event_type'] == 'read'), 'visitor_uuid']
 
     # Task 5b
@@ -125,10 +126,11 @@ class DataHandler:
         # are in the visitors_list. Second filters results from that to only the entries
         # where event_type == read. Last we want to make sure that the given visitor is
         # not in the results, so we filter it out by self.doc['visitor_uuid'] != visitor_uuid.
+
         return self.doc.loc[(self.doc['visitor_uuid'].isin(visitors_list))
                             & (self.doc['event_type'] == 'read')
                             & (self.doc['visitor_uuid'] != visitor_uuid),
-                            ['visitor_uuid', 'subject_doc_id']]
+                            ['subject_doc_id', 'visitor_uuid']]
 
     # Task 5c.2
     def get_user_also_likes(self, doc_uuid, visitor_uuid=None, sort=sort_documents_liked):
@@ -151,5 +153,5 @@ class DataHandler:
         :return: Series containing 'visitor_uuid', 'subject_doc_id' and
                  count of times the document was read.
         """
-        return sort(self, doc_uuid, visitor_uuid).value_counts().nlargest(10)
+        return sort(self, doc_uuid, visitor_uuid).groupby(['visitor_uuid', 'subject_doc_id']).size()
 
