@@ -11,6 +11,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--doc_uuid", help="Document UUID")
     parser.add_argument("-t", "--task_id", help="Task ID")
     parser.add_argument("-f", "--file_name", help="File Name")
+    parser.add_argument("-g", "--gui", help="Open GUI")
 
     args = parser.parse_args()
     # File name is required, so every condition needs to check for this.
@@ -63,9 +64,7 @@ if __name__ == '__main__':
             else:
                 print('No document uuid provided. Please use -h for more help.')
 
-    else:
-        # If file is not provided, that means we are not opening
-        # the application from command line, and open the GUI instead.
-        print('No file name given. Please use -h for more help.')
+    else:  # If file is not provided.
         gui = GUIHandler()
         gui.mainloop()
+

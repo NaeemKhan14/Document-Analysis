@@ -17,55 +17,69 @@ class GraphHandler:
         """
         self.data = DataHandler(file_name)
 
-    def get_country_graph(self, doc_uuid):
+    def get_country_graph(self, doc_uuid, gui=False):
         """
         Shows the country graph.
+        :param gui: GUI flag to determine if the function is run from GUI.
         :param doc_uuid: Unique document ID located in the .json file.
         :return: Graph of the country data.
         """
         country = self.data.get_country_name(doc_uuid)
         country.value_counts().plot(kind='bar', title='Countries')
-        plt.savefig('countries_graph.png', bbox_inches='tight')
+        # If function is run from GUI, we don't show the graph but instead
+        # just save it as an image file.
+        if gui:
+            plt.savefig('countries_graph.png', bbox_inches='tight')
+            return True
         return plt.show()
 
-    def get_continent_graph(self):
+    def get_continent_graph(self, gui=False):
         """
         Shows the continent graph.
+        :param gui: GUI flag to determine if the function is run from GUI.
         :return: Graph of the continents data.
         """
         continent = self.data.get_continents()
         continent.value_counts().plot(kind='bar', title='Continents')
-        plt.savefig('continents_graph.png', bbox_inches='tight')
+        if gui:
+            plt.savefig('continents_graph.png', bbox_inches='tight')
+            return True
         return plt.show()
 
-    def get_browser_data_graph(self):
+    def get_browser_data_graph(self, gui=False):
         """
         Shows the graph of all browser meta-data.
+        :param gui: GUI flag to determine if the function is run from GUI.
         :return: Graph of browser meta-data.
         """
         browser_metadata = self.data.get_browser_data()
         browser_metadata.value_counts().plot(kind='bar', title='Browser Data')
-        plt.savefig('browser_data_graph.png', bbox_inches='tight')
+        if gui:
+            plt.savefig('browser_data_graph.png', bbox_inches='tight')
+            return True
         return plt.show()
 
-    def get_browser_names_graph(self):
+    def get_browser_names_graph(self, gui=False):
         """
         Shows the graph of browser agents.
+        :param gui: GUI flag to determine if the function is run from GUI.
         :return: Graph of different browser agents.
         """
         browser_names = self.data.get_browser_name()
         browser_names.value_counts().plot(kind='bar', title='Browser Names')
-        plt.savefig('browser_names_graph.png', bbox_inches='tight')
+        if gui:
+            plt.savefig('browser_names_graph.png', bbox_inches='tight')
+            return True
         return plt.show()
 
-    def show_likes_graph(self, doc_uuid, visitor_uuid=None):
+    def show_likes_graph(self, doc_uuid, visitor_uuid=None, gui=False):
         """
         Makes the graph from the results taken from DataHandler.get_top_ten_likes()
         function.
         :param doc_uuid: Document ID taken from the .json file.
         :param visitor_uuid: (Optional) Visitor Document ID taken from the .json file.
         """
-        graph = Digraph("likes_graph")
+        graph = Digraph("likes_graph", format='png')
         graph_data = self.data.get_top_ten_likes(doc_uuid, visitor_uuid).iteritems()
         # Go through each element in the list.
         for g_data in graph_data:
@@ -90,5 +104,7 @@ class GraphHandler:
             graph.node(visitor_uuid[-4:], color='green', style='filled', shape='box')
             graph.edge(visitor_uuid[-4:], doc_uuid[-4:])
 
-        graph.render("likes_graph.gv", view=True)
+        # Display image when gui flag is false, otherwise don't display it.
+        view_image = False if gui else True
+        graph.render("likes_graph.dot", view=view_image)
 
