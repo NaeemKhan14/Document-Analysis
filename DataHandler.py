@@ -79,7 +79,7 @@ class DataHandler:
         # We split each entry of visitor_useragent column using "/" as the user
         # agents are always the first word of the sentence followed by "/". So
         # after splitting it, the browser agent is always going to be at index 0.
-        return self.doc.visitor_useragent.apply(lambda x: x.split("/")[0])
+        return self.doc.visitor_useragent.apply(lambda x: str(x).split("/")[0])
 
     ##################
     #  Task 4        #

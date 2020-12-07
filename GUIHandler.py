@@ -15,7 +15,7 @@ class GUIHandler(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         # GUI's general properties.
-        self.minsize(400, 550)
+        # self.minsize(400, 550)
         self.title("Document Analysis")
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -72,17 +72,17 @@ class MainFrame(tk.Frame):
         # Tasks' buttons.
         tk.Button(self, text="Task 2a", command=lambda x=self: self.button_controller(GraphsTask, 'task_2a')).grid(
             row=5, column=0, sticky=tk.W + tk.E)
-        tk.Button(self, text="Task 2b", command=lambda: self.button_controller(GraphsTask, 'task_2b')).grid(
+        tk.Button(self, text="Task 2b", command=lambda x=self: self.button_controller(GraphsTask, 'task_2b')).grid(
             row=5, column=2, sticky=tk.W + tk.E)
-        tk.Button(self, text="Task 3a", command=lambda: self.button_controller(GraphsTask, 'task_3a')).grid(
+        tk.Button(self, text="Task 3a", command=lambda x=self: self.button_controller(GraphsTask, 'task_3a')).grid(
             row=6, column=0, sticky=tk.W + tk.E)
-        tk.Button(self, text="Task 3b", command=lambda: self.button_controller(GraphsTask, 'task_3b')).grid(
+        tk.Button(self, text="Task 3b", command=lambda x=self: self.button_controller(GraphsTask, 'task_3b')).grid(
             row=6, column=2, sticky=tk.W + tk.E)
-        tk.Button(self, text="Task 4", command=lambda: self.button_controller(DataTasks, 'task_4')).grid(
+        tk.Button(self, text="Task 4", command=lambda x=self: self.button_controller(DataTasks, 'task_4')).grid(
             row=5, column=1, sticky=tk.W + tk.E)
-        tk.Button(self, text="Task 5", command=lambda: self.button_controller(DataTasks, 'task_5')).grid(
+        tk.Button(self, text="Task 5", command=lambda x=self: self.button_controller(DataTasks, 'task_5')).grid(
             row=6, column=1, sticky=tk.W + tk.E)
-        tk.Button(self, text="Task 6", command=lambda: self.button_controller(GraphsTask, 'task_6')).grid(
+        tk.Button(self, text="Task 6", command=lambda x=self: self.button_controller(GraphsTask, 'task_6')).grid(
             row=7, column=1, sticky=tk.W + tk.E)
 
     ###########################
@@ -207,7 +207,7 @@ class GraphsTask(tk.Frame):
             self.img.place(x=42, y=30)
             self.img.pack(fill=tk.BOTH, expand=tk.YES)
         else:  # If file related error happens, return to main page.
-            self.controller.show_frame(MainFrame)
+            self.go_back_home()
 
 
 class DataTasks(tk.Frame):
@@ -228,8 +228,9 @@ class DataTasks(tk.Frame):
         next time this class is called.
         """
         self.controller.show_frame(MainFrame)
-        if self.tree:
-            self.tree.destroy()
+        self.tree.destroy()
+        self.tree.pack_forget()
+        self.pack_forget()
 
     def process_data(self, event):
         """
@@ -279,4 +280,4 @@ class DataTasks(tk.Frame):
                     self.controller.show_frame(MainFrame)
             self.tree.pack(side=tk.TOP, fill='x')
         else:  # Return to main page if no file is selected.
-            self.controller.show_frame(MainFrame)
+            self.go_back_home()

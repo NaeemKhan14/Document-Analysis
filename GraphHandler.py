@@ -72,6 +72,9 @@ class GraphHandler:
             return True
         return plt.show()
 
+    ##################
+    #  Task 6        #
+    ##################
     def show_likes_graph(self, doc_uuid, visitor_uuid=None, gui=False):
         """
         Makes the graph from the results taken from DataHandler.get_top_ten_likes()
